@@ -245,9 +245,50 @@
             }
         }
 
-
         .hidden {
             display: none;
+        }
+
+        .split-button-group {
+            display: inline-flex;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            margin-top: 1.2em;
+        }
+
+        .split-button-group button {
+            background-color: var(--accent-alt-3);
+            color: var(--accent);
+            border: 1px solid var(--accent-alt-1);
+            border-left: none;
+            padding: 0.7em 1.2em;
+            font-size: 1rem;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.15s, color 0.15s;
+        }
+
+        .split-button-group button:first-child {
+            border-left: 1px solid var(--accent-alt-1);
+        }
+
+        .split-button-group button:not(:last-child) {
+            border-right: 1px solid var(--accent-alt-1);
+        }
+
+        .split-button-group button:first-child {
+            border-radius: var(--radius) 0 0 var(--radius);
+        }
+
+        .split-button-group button:last-child {
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+
+        .split-button-group button.active,
+        .split-button-group button:hover {
+            background-color: var(--accent);
+            color: #fff;
         }
     </style>
     <script type="module">
@@ -288,6 +329,8 @@
             let timer = null;
             let currentAction = null;
 
+            let targetLevel = "simple";
+
             const gamepadInteractive = document.querySelectorAll('.gamepad .interactive');
             gamepadInteractive.forEach(elem => {
                 elem.addEventListener('click', (e) => {
@@ -301,8 +344,7 @@
                         for (const action of actions) {
                             if (action.id === id || (action.id.startsWith('POV') && id == "POV")) {
                                 if (action == currentAction) {
-                                    currentAction = actions[Math.floor(Math.random() * actions.length)];
-                                    showAction(currentAction.name);
+                                    nextAction();
                                 } else {
                                     markWrong();
                                 }
@@ -316,6 +358,23 @@
             const timeBar = document.getElementById('time-bar');
             const timeBarCont = document.getElementById('time-bar-container');
             const actionText = document.getElementById('action');
+
+            function nextAction() {
+                var filtered = actions.filter(action => {
+                    switch (targetLevel) {
+                        case "simple":
+                            return action.level <= 0;
+                        case "manual":
+                            return action.level <= 1;
+                        case "advanced":
+                            return action.level <= 2;
+                    }
+
+                    return false;
+                });
+                currentAction = filtered[Math.floor(Math.random() * filtered.length)];
+                showAction(currentAction.name);
+            }
 
             function updateProgressBar(value) {
                 timeBar.style.width = `${value * 100}%`;
@@ -400,8 +459,18 @@
             const startButton = document.getElementById('start-btn');
             startButton.addEventListener('click', (e) => {
                 e.preventDefault();
-                currentAction = actions[Math.floor(Math.random() * actions.length)];
-                showAction(currentAction.name);
+                nextAction();
+            });
+
+            const levelChooser = document.getElementById('level-chooser');
+            levelChooser.querySelectorAll("button").forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    levelChooser.querySelectorAll("button").forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const mode = button.getAttribute('data-mode');
+                    targetLevel = mode;
+                });
             });
 
             const getStartedButton = document.getElementById('get-started');
@@ -418,6 +487,11 @@
     <div class="container">
         <h1>Control Practice</h1>
         <a href="#" class="button" id="get-started">Get Started</a>
+        <div class="split-button-group" id="level-chooser">
+            <button type="button" class="active" data-mode="simple">Simple</button>
+            <button type="button" data-mode="manual">Manual</button>
+            <button type="button" data-mode="advanced">Advanced</button>
+        </div>
     </div>
     <div class="page hidden" id="page">
         <div class="side">
