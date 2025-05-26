@@ -307,6 +307,16 @@
             background-color: var(--accent);
             color: #fff;
         }
+
+        .score {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
     </style>
     <script type="module">
         import { GamepadManager, CustomGamepad, LogitechGExtreme3DPro } from "./scripts/gamepad.js";
@@ -315,6 +325,8 @@
         const gamepadManager = new GamepadManager();
         gamepadManager.registerCustomGamepad(LogitechGExtreme3DPro);
 
+        let score = 0;
+
         document.addEventListener("DOMContentLoaded", () => {
             // Create a text field to display gamepad state
             const container = document.querySelector('.container');
@@ -322,8 +334,20 @@
             status.textContent = 'Connect the joystick and press any button...\nor you can use your mouse.';
             container.appendChild(status);
 
+            // Create a score display and add it to the game page
+            const page = document.getElementById('page');
+            const scoreDisplay = document.createElement('div');
+            scoreDisplay.className = 'score';
+            scoreDisplay.textContent = `Score: ${score}`;
+            page.insertBefore(scoreDisplay, page.firstChild);
+
+            function updateScoreDisplay() {
+                scoreDisplay.textContent = `Score: ${score}`;
+            }
+
 
             let anyActionLastUpdate = false;
+
 
             function updateStatus(gamepad) {
                 const axes = LogitechGExtreme3DPro.getAxis(gamepad).map(a => a.toFixed(2));
@@ -383,6 +407,7 @@
                         for (const action of actions) {
                             if (action.id === id || (action.id.startsWith('POV') && id == "POV")) {
                                 if (action == currentAction) {
+                                    markCorrect();
                                     nextAction();
                                 } else if (currentAction != null) {
                                     markWrong();
@@ -395,10 +420,14 @@
 
             const povArrow = document.getElementById('pov-arrow');
 
-            const page = document.getElementById('page');
             const timeBar = document.getElementById('time-bar');
             const timeBarCont = document.getElementById('time-bar-container');
             const actionText = document.getElementById('action');
+
+            function markCorrect() {
+                score += 100 - Math.round(parseFloat(timeBar.style.width)); // Increase score based on time bar
+                updateScoreDisplay();
+            }
 
             function nextAction() {
                 var filtered = actions.filter(action => {
@@ -513,6 +542,8 @@
                 page.classList.add('wrong');
                 timeBarCont.classList.add('error');
                 highlightGamepad(currentAction.id);
+                score -= 150; // Decrease score for wrong action
+                updateScoreDisplay();
             }
 
             const startButton = document.getElementById('start-btn');
