@@ -90,6 +90,7 @@
             background-color: var(--bg);
             flex-direction: row;
             transition: background-color 0.3s;
+            overflow: hidden;
         }
 
         .page.wrong {
@@ -147,7 +148,7 @@
         .gamepad {
             width: 100%;
             max-width: 600px;
-            height: auto;
+            height: 80vh;
             fill: var(--accent-alt-3);
             stroke: var(--accent-alt-1);
             stroke-width: 4px;
@@ -158,19 +159,21 @@
             stroke: var(--error-alt-1);
         }
 
-        @media (max-width: 1200px) {
+        @media (max-aspect-ratio: 1) {
             .page {
                 flex-direction: column;
                 height: auto;
                 min-height: 100vh;
             }
 
-            .side {
-                min-height: 200px;
+            .gamepad {
+                height: auto;
             }
 
-            .gamepad {
-                height: 500px;
+            @media(min-height: 670px) {
+                .gamepad {
+                    height: 500px;
+                }
             }
         }
 
