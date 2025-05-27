@@ -387,10 +387,10 @@ pre {
     color: var(--accent);
     position: absolute;
     bottom: -3rem;
-    animation: fade-out forwards 0.5s cubic-bezier(0.23, 0.53, 0.58, 1);
+    animation: fade-out-text forwards 0.5s cubic-bezier(0.23, 0.53, 0.58, 1);
 }
 
-@keyframes fade-out {
+@keyframes fade-out-text {
     0% {
         opacity: 1;
         transform: translateY(0);
