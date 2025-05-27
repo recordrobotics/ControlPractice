@@ -408,13 +408,7 @@
         let score = 0;
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Create a text field to display gamepad state
-            const container = document.querySelector('.container');
-            const status = document.createElement('pre');
-            status.textContent = 'Connect the joystick and press any button...\nor you can use your mouse.';
-            container.appendChild(status);
-
-            // Create a score display and add it to the game page
+            const status = document.getElementById('status');
             const scoreDisplay = document.getElementById('score');
 
             function updateScoreDisplay(isPos) {
@@ -700,6 +694,7 @@
             <button type="button" data-mode="manual">Manual</button>
             <button type="button" data-mode="advanced">Advanced</button>
         </div>
+        <pre id="status">Connect the joystick and press any button...&NewLine;or you can use your mouse.</pre>
     </div>
     <div class="page hidden" id="page">
         <div class="side">
