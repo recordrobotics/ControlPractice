@@ -316,12 +316,7 @@
         gamepadManager.registerCustomGamepad(LogitechGExtreme3DPro);
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Create a text field to display gamepad state
-            const container = document.querySelector('.container');
-            const status = document.createElement('pre');
-            status.textContent = 'Connect the joystick and press any button...\nor you can use your mouse.';
-            container.appendChild(status);
-
+            const status = document.getElementById('status');
 
             let anyActionLastUpdate = false;
 
@@ -551,6 +546,7 @@
             <button type="button" data-mode="manual">Manual</button>
             <button type="button" data-mode="advanced">Advanced</button>
         </div>
+        <pre id="status">Connect the joystick and press any button...&NewLine;or you can use your mouse.</pre>
     </div>
     <div class="page hidden" id="page">
         <div class="side">
