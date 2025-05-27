@@ -1,0 +1,414 @@
+:root {
+    --bg: #f9f9fb;
+    --bg-alt: #f3f6fa;
+    --fg: #222;
+    --accent: #4f8cff;
+    --accent-alt-1: #78a7ff;
+    --accent-alt-2: #bad2ff;
+    --accent-alt-3: #e7f0ff;
+    --error: #ff8585;
+    --error-alt-1: #bf2c2c;
+    --error-alt-2: #ffb3b3;
+    --error-alt-3: #ff6666;
+    --radius: 10px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background: #fff;
+    padding: 2rem 2.5rem;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    text-align: center;
+    max-width: 460px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    margin: 0 0 1rem 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+p {
+    margin: 0 0 1.5rem 0;
+    color: #555;
+    font-size: 1.1rem;
+}
+
+a.button {
+    display: inline-block;
+    padding: 0.7em 1.5em;
+    background-color: var(--accent);
+    color: #fff;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+a.button:hover {
+    background-color: #2563eb;
+}
+
+a.link {
+    display: inline-block;
+    padding: 0.7em 1.5em;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+a.link:hover {
+    color: #2563eb;
+}
+
+pre {
+    text-align: left;
+    background: var(--bg-alt);
+    padding: 1em;
+    border-radius: var(--radius);
+    margin-top: 1.5em;
+    overflow: scroll;
+    max-width: 100%;
+}
+
+.page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--bg);
+    flex-direction: row;
+    transition: background-color 0.3s;
+    overflow: hidden;
+}
+
+.page.wrong {
+    background-color: var(--error);
+}
+
+.side {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5%;
+}
+
+.action-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+.action-text {
+    font-size: 3rem;
+    color: var(--accent);
+    font-weight: 500;
+    text-align: center;
+    transform: scale(0);
+}
+
+.action-text .button {
+    font-size: 1.2rem;
+}
+
+.action-text.hide {
+    animation: bounce-out forwards 0.4s cubic-bezier(0.6, 0.05, 0.8, 0.2);
+}
+
+.action-text.show {
+    animation: bounce-in forwards 0.5s cubic-bezier(.3, 1.6, .4, 1.1);
+}
+
+@keyframes bounce-in {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce-out {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(0);
+    }
+}
+
+.gamepad {
+    width: 100%;
+    max-width: 600px;
+    height: 80vh;
+    fill: var(--accent-alt-3);
+    stroke: var(--accent-alt-1);
+    stroke-width: 4px;
+}
+
+.wrong .gamepad {
+    fill: var(--error-alt-2);
+    stroke: var(--error-alt-1);
+}
+
+@media (max-aspect-ratio: 1) {
+    .page {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .action-container {
+        margin-bottom: 0;
+    }
+
+    .gamepad {
+        height: auto;
+    }
+
+    @media(min-height: 670px) {
+        .gamepad {
+            height: 500px;
+        }
+    }
+}
+
+.gamepad path {
+    transition: fill 0.2s;
+}
+
+.gamepad .povarrow {
+    pointer-events: none;
+    display: none;
+}
+
+.gamepad .povarrow.show {
+    display: block;
+}
+
+.gamepad .interactive>path:hover {
+    fill: var(--accent-alt-2);
+}
+
+.wrong .gamepad .interactive>path:hover {
+    fill: var(--error-alt-3);
+}
+
+.gamepad .highlight {
+    stroke-width: 7px;
+    stroke: var(--accent-alt-2);
+    filter: drop-shadow(0 0 5px var(--accent-alt-2));
+    fill: var(--accent-alt-1) !important;
+}
+
+.gamepad .highlight:hover {
+    fill: var(--accent) !important;
+}
+
+.povarrow.highlight {
+    filter: none;
+    stroke-width: 4px;
+}
+
+.progress-container {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    z-index: 100;
+    padding: 0;
+    margin: 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 15px;
+    background: var(--accent-alt-3);
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.progress-container.error .progress-bar {
+    background: var(--error-alt-2);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background-color: var(--accent-alt-1);
+    transition: background-color 0.2s;
+}
+
+.progress-container.error .progress-bar-fill {
+    background: none;
+    background-color: var(--error-alt-1);
+}
+
+.progress-bar-fill.hide {
+    animation: fade-out 0.3s forwards;
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.split-button-group {
+    display: inline-flex;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    margin-bottom: 1.5em;
+}
+
+.split-button-group button {
+    background-color: var(--accent-alt-3);
+    color: var(--accent);
+    border: 1px solid var(--accent-alt-1);
+    border-left: none;
+    padding: 0.7em 1.2em;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.split-button-group button:first-child {
+    border-left: 1px solid var(--accent-alt-1);
+}
+
+.split-button-group button:not(:last-child) {
+    border-right: 1px solid var(--accent-alt-1);
+}
+
+.split-button-group button:first-child {
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.split-button-group button:last-child {
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.split-button-group button.active,
+.split-button-group button:hover {
+    background-color: var(--accent);
+    color: #fff;
+}
+
+.score {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    animation: none;
+}
+
+.score.bouncepos {
+    animation: bounce-update-pos forwards 0.4s cubic-bezier(0.23, 0.53, 0.58, 1);
+}
+
+.score.bounceneg {
+    animation: bounce-update-neg forwards 0.25s cubic-bezier(0.23, 0.53, 0.58, 1);
+}
+
+@keyframes bounce-update-pos {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce-update-neg {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.7);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.time-text {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--accent);
+    position: absolute;
+    bottom: -3rem;
+    animation: fade-out forwards 0.5s cubic-bezier(0.23, 0.53, 0.58, 1);
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+}
+
+.shoutout {
+    position: absolute;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--accent);
+    transform: rotate(45deg);
+    right: 0;
+    top: 1.45rem;
+    padding: 10px;
+}
