@@ -442,6 +442,7 @@
             let timerInterval = null;
             let timerStart = 0;
             let timer = null;
+            let decreasedScore = false;
             let currentAction = null;
 
             let targetLevel = "simple";
@@ -546,6 +547,7 @@
             }
 
             function showAction(text) {
+                decreasedScore = false;
                 actionText.classList.remove('show');
                 actionText.classList.add('hide');
                 timeBar.classList.add('hide');
@@ -589,7 +591,8 @@
 
             function markWrong() {
                 const lastScore = score;
-                if (timer != null) {
+                if (!decreasedScore) {
+                    decreasedScore = true;
                     score = Math.max(0, score - 20); // Decrease score for wrong action
                 }
 
