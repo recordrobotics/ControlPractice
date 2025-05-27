@@ -111,6 +111,7 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 2.5rem;
+            position: relative;
         }
 
         .action-text {
@@ -363,6 +364,27 @@
                 transform: scale(1);
             }
         }
+
+        .time-text {
+            font-size: 1rem;
+            font-weight: 300;
+            color: var(--accent);
+            position: absolute;
+            bottom: -3rem;
+            animation: fade-out forwards 0.5s cubic-bezier(0.23, 0.53, 0.58, 1);
+        }
+
+        @keyframes fade-out {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+        }
     </style>
     <script type="module">
         import { GamepadManager, CustomGamepad, LogitechGExtreme3DPro } from "./scripts/gamepad.js";
@@ -397,6 +419,18 @@
             }
 
             scoreDisplay.textContent = `High Score: ${localStorage.getItem("high-score") || 0}`;
+
+            const actionContainer = document.getElementById('action-cont');
+
+            function addTimeText(text) {
+                const timeText = document.createElement('div');
+                timeText.classList.add('time-text');
+                timeText.textContent = text;
+                actionContainer.appendChild(timeText);
+                setTimeout(() => {
+                    timeText.remove();
+                }, 500);
+            }
 
             let anyActionLastUpdate = false;
 
@@ -486,6 +520,8 @@
                         localStorage.setItem("high-score", score);
                     }
                     updateScoreDisplay(true);
+
+                    addTimeText(elapsed.toFixed(3) + 's');
                 }
             }
 
@@ -654,7 +690,7 @@
     </div>
     <div class="page hidden" id="page">
         <div class="side">
-            <div class="action-container">
+            <div class="action-container" id="action-cont">
                 <div class="score" id="score">High Score: 0</div>
                 <div class="action-text show" id="action"><a href="#" class="button" id="start-btn">Start</a></div>
             </div>
