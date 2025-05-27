@@ -1,15 +1,40 @@
 // gamepad.js
 
+const isNear = (value, target, threshold = 0.1) => {
+    return Math.abs(value - target) < threshold;
+};
+
 class CustomGamepad {
-    constructor(id, axesCount, buttonsCount, matchFn) {
+    constructor(id, axesCount, buttonsCount, matchFn, axisMap, povMap) {
         this.id = id;
         this.axesCount = axesCount;
         this.buttonsCount = buttonsCount;
         this.matchFn = matchFn;
+        this.axisMap = axisMap || [];
+        this.povMap = povMap || {};
     }
 
     matches(gamepad) {
         return this.matchFn(gamepad);
+    }
+
+    getAxis(gamepad) {
+        return this.axisMap.map(axis => {
+            return gamepad.axes[axis];
+        });
+    }
+
+    getPOV(gamepad) {
+        const pov = gamepad.axes[this.povMap.axis];
+
+        const threshold = 0.1; // Define a threshold for POV detection
+
+        return {
+            'POV+Y': isNear(pov, this.povMap['POV+Y'], threshold),
+            'POV-Y': isNear(pov, this.povMap['POV-Y'], threshold),
+            'POV+X': isNear(pov, this.povMap['POV+X'], threshold),
+            'POV-X': isNear(pov, this.povMap['POV-X'], threshold)
+        };
     }
 }
 
@@ -94,9 +119,22 @@ const LogitechGExtreme3DPro = new CustomGamepad(
         // Match by id string and axes/buttons count
         return (
             /Logitech.*Extreme 3D/i.test(gamepad.id) &&
-            gamepad.axes.length === 4 &&
+            gamepad.axes.length === 10 &&
             gamepad.buttons.length === 12
         );
+    },
+    [
+        0,
+        1,
+        5,
+        6
+    ],
+    {
+        axis: 9,
+        'POV+Y': -1,
+        'POV-Y': 0.14,
+        'POV+X': -0.43,
+        'POV-X': 0.71,
     }
 );
 
