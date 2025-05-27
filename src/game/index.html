@@ -105,6 +105,15 @@
             padding: 5%;
         }
 
+        .action-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
         .action-text {
             font-size: 3rem;
             color: var(--accent);
@@ -164,6 +173,10 @@
                 flex-direction: column;
                 height: auto;
                 min-height: 100vh;
+            }
+
+            .action-container {
+                margin-bottom: 0;
             }
 
             .gamepad {
@@ -307,6 +320,71 @@
             background-color: var(--accent);
             color: #fff;
         }
+
+        .score {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            animation: none;
+        }
+
+        .score.bouncepos {
+            animation: bounce-update-pos forwards 0.4s cubic-bezier(0.23, 0.53, 0.58, 1);
+        }
+
+        .score.bounceneg {
+            animation: bounce-update-neg forwards 0.25s cubic-bezier(0.23, 0.53, 0.58, 1);
+        }
+
+        @keyframes bounce-update-pos {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounce-update-neg {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0.7);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .time-text {
+            font-size: 1rem;
+            font-weight: 300;
+            color: var(--accent);
+            position: absolute;
+            bottom: -3rem;
+            animation: fade-out forwards 0.5s cubic-bezier(0.23, 0.53, 0.58, 1);
+        }
+
+        @keyframes fade-out {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+        }
     </style>
     <script type="module">
         import { GamepadManager, CustomGamepad, LogitechGExtreme3DPro } from "./scripts/gamepad.js";
@@ -315,6 +393,8 @@
         const gamepadManager = new GamepadManager();
         gamepadManager.registerCustomGamepad(LogitechGExtreme3DPro);
 
+        let score = 0;
+
         document.addEventListener("DOMContentLoaded", () => {
             // Create a text field to display gamepad state
             const container = document.querySelector('.container');
@@ -322,6 +402,35 @@
             status.textContent = 'Connect the joystick and press any button...\nor you can use your mouse.';
             container.appendChild(status);
 
+            // Create a score display and add it to the game page
+            const scoreDisplay = document.getElementById('score');
+
+            function updateScoreDisplay(isPos) {
+                const len = isPos ? 400 : 250;
+                scoreDisplay.classList.add(isPos ? 'bouncepos' : 'bounceneg');
+
+                setTimeout(() => {
+                    scoreDisplay.textContent = `Score: ${score}`;
+                }, len / 2);
+
+                setTimeout(() => {
+                    scoreDisplay.classList.remove(isPos ? 'bouncepos' : 'bounceneg');
+                }, len);
+            }
+
+            scoreDisplay.textContent = `High Score: ${localStorage.getItem("high-score") || 0}`;
+
+            const actionContainer = document.getElementById('action-cont');
+
+            function addTimeText(text) {
+                const timeText = document.createElement('div');
+                timeText.classList.add('time-text');
+                timeText.textContent = text;
+                actionContainer.appendChild(timeText);
+                setTimeout(() => {
+                    timeText.remove();
+                }, 500);
+            }
 
             let anyActionLastUpdate = false;
 
@@ -341,6 +450,7 @@
                         anyActionThisUpdate = true;
                         if (!anyActionLastUpdate) {
                             if (currentAction && currentAction.id === action.id) {
+                                markCorrect();
                                 nextAction();
                             } else if (currentAction != null) {
                                 markWrong();
@@ -366,6 +476,7 @@
             let timerInterval = null;
             let timerStart = 0;
             let timer = null;
+            let decreasedScore = false;
             let currentAction = null;
 
             let targetLevel = "simple";
@@ -383,6 +494,7 @@
                         for (const action of actions) {
                             if (action.id === id || (action.id.startsWith('POV') && id == "POV")) {
                                 if (action == currentAction) {
+                                    markCorrect();
                                     nextAction();
                                 } else if (currentAction != null) {
                                     markWrong();
@@ -399,6 +511,19 @@
             const timeBar = document.getElementById('time-bar');
             const timeBarCont = document.getElementById('time-bar-container');
             const actionText = document.getElementById('action');
+
+            function markCorrect() {
+                if (timer != null) {
+                    const elapsed = (Date.now() - timerStart) / 1000;
+                    score += Math.round(100 * (1 - elapsed / (timePerAction / 1000)));
+                    if (score > (localStorage.getItem("high-score") || 0)) {
+                        localStorage.setItem("high-score", score);
+                    }
+                    updateScoreDisplay(true);
+
+                    addTimeText(elapsed.toFixed(3) + 's');
+                }
+            }
 
             function nextAction() {
                 var filtered = actions.filter(action => {
@@ -458,6 +583,7 @@
             }
 
             function showAction(text) {
+                decreasedScore = false;
                 actionText.classList.remove('show');
                 actionText.classList.add('hide');
                 timeBar.classList.add('hide');
@@ -500,6 +626,12 @@
             }
 
             function markWrong() {
+                const lastScore = score;
+                if (!decreasedScore) {
+                    decreasedScore = true;
+                    score = Math.max(0, score - 80); // Decrease score for wrong action
+                }
+
                 if (timer) {
                     clearTimeout(timer);
                     timer = null;
@@ -513,11 +645,15 @@
                 page.classList.add('wrong');
                 timeBarCont.classList.add('error');
                 highlightGamepad(currentAction.id);
+                if (score != lastScore) {
+                    updateScoreDisplay(false);
+                }
             }
 
             const startButton = document.getElementById('start-btn');
             startButton.addEventListener('click', (e) => {
                 e.preventDefault();
+                updateScoreDisplay(false);
                 nextAction();
             });
 
@@ -554,7 +690,10 @@
     </div>
     <div class="page hidden" id="page">
         <div class="side">
-            <div class="action-text show" id="action"><a href="#" class="button" id="start-btn">Start</a></div>
+            <div class="action-container" id="action-cont">
+                <div class="score" id="score">High Score: 0</div>
+                <div class="action-text show" id="action"><a href="#" class="button" id="start-btn">Start</a></div>
+            </div>
         </div>
         <div class="side">
             <svg class="gamepad" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 705 800">
