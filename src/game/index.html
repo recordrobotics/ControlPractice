@@ -62,15 +62,17 @@
 
                 let anyActionThisUpdate = false;
 
-                for (const action of actions) {
-                    if (action.wasPerformed(gamepad, LogitechGExtreme3DPro)) {
-                        anyActionThisUpdate = true;
-                        if (!anyActionLastUpdate) {
-                            if (currentAction && currentAction.id === action.id) {
-                                markCorrect();
-                                nextAction();
-                            } else if (currentAction != null) {
-                                markWrong();
+                if (animTimeout == null) {
+                    for (const action of actions) {
+                        if (action.wasPerformed(gamepad, LogitechGExtreme3DPro)) {
+                            anyActionThisUpdate = true;
+                            if (!anyActionLastUpdate) {
+                                if (currentAction && currentAction.id === action.id) {
+                                    markCorrect();
+                                    nextAction();
+                                } else if (currentAction != null) {
+                                    markWrong();
+                                }
                             }
                         }
                     }
@@ -90,6 +92,7 @@
             });
 
             const timePerAction = 2000; // 2 seconds
+            let animTimeout = null;
             let timerInterval = null;
             let timerStart = 0;
             let timer = null;
@@ -101,6 +104,9 @@
             const gamepadInteractive = document.querySelectorAll('.gamepad .interactive');
             gamepadInteractive.forEach(elem => {
                 elem.addEventListener('click', (e) => {
+                    if (animTimeout != null)
+                        return;
+
                     let id = e.target.id;
                     if (id) {
                         // special case for POV
@@ -221,10 +227,21 @@
                     timeBar.style.width = '0%';
                 }, 200);
 
-                setTimeout(() => {
+                if (animTimeout) {
+                    clearTimeout(animTimeout);
+                    animTimeout = null;
+                }
+
+                animTimeout = setTimeout(() => {
+                    animTimeout = null;
                     timeBar.classList.remove('hide');
 
                     timerStart = Date.now();
+
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                    }
 
                     timerInterval = setInterval(() => {
                         const elapsed = (Date.now() - timerStart) / 1000;
@@ -234,6 +251,11 @@
                     actionText.classList.remove('hide');
                     actionText.innerHTML = text;
                     actionText.classList.add('show');
+
+                    if (timer) {
+                        clearTimeout(timer);
+                        timer = null;
+                    }
 
                     timer = setTimeout(() => {
                         timer = null;
