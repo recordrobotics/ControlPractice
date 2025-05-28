@@ -26,7 +26,10 @@ const checkAxis = (index) => ((gamepad, device) => {
         lastAxes = axes;
     }
 
-    const value = Math.abs(axes[index - 1] - lastAxes[index - 1]) > 1.4;
+    const lastSide = lastAxes[index - 1] < -0.4 ? -1 : lastAxes[index - 1] > 0.4 ? 1 : 0;
+    const side = axes[index - 1] < -0.4 ? -1 : axes[index - 1] > 0.4 ? 1 : lastSide;
+
+    const value = side !== 0 && lastSide !== side;
     if (value) {
         lastAxes = axes;
     }
