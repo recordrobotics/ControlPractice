@@ -23,6 +23,7 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             const container = document.getElementById('get-started-cont');
+            const footer = document.getElementById('footer');
             const status = document.getElementById('status');
 
             let anyActionLastUpdate = false;
@@ -260,6 +261,7 @@
             getStartedButton.addEventListener('click', (e) => {
                 e.preventDefault();
                 container.classList.add('hidden');
+                footer.classList.add('hidden');
                 page.classList.remove('hidden');
             });
         });
@@ -278,6 +280,11 @@
         <a href="game" class="link">or try gamified</a>
         <pre id="status">Connect the joystick and press any button...&NewLine;or you can use your mouse.</pre>
     </div>
+    <footer id="footer">
+        <img src="./assets/logo.png" alt="Logo" class="logo" />
+        <p>Made with <span class="heart">♥</span> by <a href="https://www.recordrobotics.org/" target="_blank">Record
+                Robotics</a></p>
+    </footer>
     <div class="page hidden" id="page">
         <div class="side">
             <div class="action-text show" id="action"><a href="#" class="button" id="start-btn">Start</a></div>
